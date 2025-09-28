@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页版串口调试助手</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .panel-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            white-space: pre;
+        }
+        .send-panel {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        button.danger {
+            background-color: #f44336;
+        }
+        button.danger:hover {
+            background-color: #d32f2f;
+        }
+        select, input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 100px;
+        }
+        .status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .connected {
+            background-color: #4CAF50;
+        }
+        .disconnected {
+            background-color: #f44336;
+        }
+        .connecting {
+            background-color: #FFC107;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .debug-panel {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        #debugLog {
+            width: 100%;
+            height: 150px;
+            font-family: monospace;
+            font-size: 12px;
+            background-color: #f8f8f8;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        input[type="checkbox"] {
+            margin: 0;
+        }
+        .settings-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .settings-subgroup {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .history-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+        #receivedText {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        #sendText {
+            height: 150px;
+        }
+        .newline-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>网页版串口调试助手</h1>
+        
+        <div class="control-panel">
+            <div class="panel-title">连接设置</div>
+            <div class="settings-group">
+                <button id="connectBtn">连接串口</button>
+                
+                <div class="settings-subgroup">
+                    <label>波特率:</label>
+                    <select id="baudRate">
+                        <option value="300">300</option>
+                        <option value="600">600</option>
+                        <option value="1200">1200</option>
+                        <option value="2400">2400</option>
+                        <option value="4800">4800</option>
+                        <option value="9600">9600</option>
+                        <option value="14400">14400</option>
+                        <option value="19200">19200</option>
+                        <option value="38400">38400</option>
+                        <option value="57600">57600</option>
+                        <option value="115200" selected>115200</option>
+                        <option value="custom">自定义...</option>
+                    </select>
+                    <input type="number" id="customBaudRate" style="display: none; width: 80px;" placeholder="波特率">
+                </div>
+                
+                <div class="settings-subgroup">
+                    <label>数据位:</label>
+                    <select id="dataBits">
+                        <option value="7">7</option>
+                        <option value="8" selected>8</option>
+                    </select>
+                </div>
+                
+                <div class="settings-subgroup">
+                    <label>停止位:</label>
+                    <select id="stopBits">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                
+                <div class="settings-subgroup">
+                    <label>校验位:</label>
+                    <select id="parity">
+                        <option value="none" selected>无</option>
+                        <option value="even">偶</option>
+                        <option value="odd">奇</option>
+                    </select>
+                </div>
+                
+                <div class="status">
+                    <span class="status-indicator disconnected" id="statusIndicator"></span>
+                    <span id="statusText">未连接</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">显示设置</div>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="hexDisplay"> 十六进制显示
+                </label>
+                <label>
+                    <input type="checkbox" id="autoNewline" checked> 自动换行
+                </label>
+                <label>
+                    <input type="checkbox" id="showTimestamp"> 显示时间戳
+                </label>
+                <label>
+                    <input type="checkbox" id="autoScroll" checked> 自动滚动
+                </label>
+                <label>
+                    <input type="checkbox" id="showControlChars"> 显示控制字符
+                </label>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">接收区</div>
+            <textarea id="receivedText" readonly></textarea>
+            <div class="send-panel">
+                <button id="clearBtn">清空接收区</button>
+                <button id="saveBtn">保存记录</button>
+                <button id="copyBtn">复制内容</button>
+                <div style="margin-left: auto;">
+                    <span id="byteCount">0 字节</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">发送设置</div>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="hexSend"> 十六进制发送
+                </label>
+                <div class="newline-options">
+                    <label>
+                        <input type="checkbox" id="appendNewline" checked> 自动添加换行
+                    </label>
+                    <select id="newlineType">
+                        <option value="\n">LF (\n)</option>
+                        <option value="\r">CR (\r)</option>
+                        <option value="\r\n" selected>CR+LF (\r\n)</option>
+                    </select>
+                </div>
+                <label>
+                    <input type="checkbox" id="repeatSend"> 定时发送
+                </label>
+                <input type="number" id="repeatInterval" style="width: 80px;" placeholder="间隔(ms)" value="1000" disabled>
+            </div>
+            
+            <div class="settings-group">
+                <label>预设指令:</label>
+                <select id="presetCommands">
+                    <option value="">-- 选择预设指令 --</option>
+                    <option value="AT">AT</option>
+                    <option value="AT+GMR">AT+GMR (查询版本)</option>
+                    <option value="AT+CSQ">AT+CSQ (信号质量)</option>
+                    <option value="AT+CWLAP">AT+CWLAP (扫描WiFi)</option>
+                    <option value="custom">自定义AT指令...</option>
+                </select>
+                <button id="sendPresetBtn">发送预设</button>
+            </div>
+            
+            <div class="panel-title">发送区</div>
+            <textarea id="sendText" placeholder="输入要发送的数据（支持多行）"></textarea>
+            <div class="send-panel">
+                <button id="sendBtn">发送</button>
+                <button id="clearSendBtn">清空发送区</button>
+                <button id="loadBtn">加载文件</button>
+                <button id="testLoopback">测试回环</button>
+                <button id="testNewlineBtn">测试换行符</button>
+            </div>
+        </div>
+        
+        <div class="debug-panel">
+            <div class="panel-title">调试信息</div>
+            <textarea id="debugLog" readonly></textarea>
+            <div class="send-panel">
+                <button id="clearDebugBtn">清空调试信息</button>
+                <button id="exportDebugBtn">导出调试日志</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
