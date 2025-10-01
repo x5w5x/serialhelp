@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线串口调试助手</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="stytle/app.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>在线串口调试助手</h2>
+            <p class="app-description">用于串口设备通信测试的便携工具</p>
+        </header>
+
+        <!-- 连接设置（水平布局） -->
+        <div class="card">
+            <div class="panel-header">
+                <i class="fa fa-plug"></i>
+                <div class="panel-title">连接设置</div>
+            </div>
+            <div class="control-panel">
+                <div class="connection-settings">
+                    <button id="connectBtn" class="primary-btn">
+                        <i class="fa fa-connectdevelop"></i> 连接串口
+                    </button>
+                    
+                    <div class="settings-subgroup">
+                        <label>波特率:</label>
+                        <select id="baudRate">
+                            <option value="4800">4800</option>
+                            <option value="9600">9600</option>
+                            <option value="14400">14400</option>
+                            <option value="19200">19200</option>
+                            <option value="38400">38400</option>
+                            <option value="57600">57600</option>
+                            <option value="115200" selected>115200</option>
+                            <option value="custom">自定义...</option>
+                        </select>
+                        <input type="number" id="customBaudRate" class="custom-baudrate" placeholder="输入波特率">
+                    </div>
+                    
+                    <div class="settings-subgroup">
+                        <label>数据位:</label>
+                        <select id="dataBits">
+                            <option value="7">7</option>
+                            <option value="8" selected>8</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-subgroup">
+                        <label>停止位:</label>
+                        <select id="stopBits">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-subgroup">
+                        <label>校验位:</label>
+                        <select id="parity">
+                            <option value="none" selected>无</option>
+                            <option value="even">偶</option>
+                            <option value="odd">奇</option>
+                        </select>
+                    </div>
+                    
+                    <div class="status">
+                        <span class="status-indicator disconnected" id="statusIndicator"></span>
+                        <span id="statusText">未连接</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 接收区（左） + 显示设置（右） -->
+        <div class="layout-row">
+            <!-- 接收区（左侧，占主要宽度） -->
+            <div class="card content-card">
+                <div class="panel-header">
+                    <i class="fa fa-download"></i>
+                    <div class="panel-title">接收区</div>
+                </div>
+                <div class="control-panel">
+                    <textarea id="receivedText" readonly></textarea>
+                    <div class="button-group">
+                        <button id="clearBtn" class="secondary-btn">
+                            <i class="fa fa-trash"></i> 清空接收区
+                        </button>
+                        <button id="saveBtn" class="secondary-btn">
+                            <i class="fa fa-save"></i> 保存记录
+                        </button>
+                        <button id="copyBtn" class="secondary-btn">
+                            <i class="fa fa-copy"></i> 复制内容
+                        </button>
+                        <div class="byte-counter">
+                            <span id="byteCount">0 字节</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 显示设置（右侧，固定宽度） -->
+            <div class="card settings-card">
+                <div class="panel-header">
+                    <i class="fa fa-eye"></i>
+                    <div class="panel-title">显示设置</div>
+                </div>
+                <div class="control-panel">
+                    <div class="settings-group vertical-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hexDisplay"> 十六进制显示
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoNewline" > 自动换行
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showTimestamp"> 显示时间戳
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoScroll" checked> 自动滚动
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showControlChars"> 显示控制字符
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout-row">
+            <div class="card content-card">
+                <div class="panel-header">
+                    <i class="fa fa-upload"></i>
+                    <div class="panel-title">发送区</div>
+                </div>
+                <div class="control-panel">
+                    <textarea id="sendText" placeholder="输入要发送的数据（支持多行）"></textarea>
+                    <div class="button-group">
+                        <button id="sendBtn" class="primary-btn">
+                            <i class="fa fa-paper-plane"></i> 发送
+                        </button>
+                        <button id="clearSendBtn" class="secondary-btn">
+                            <i class="fa fa-trash"></i> 清空发送区
+                        </button>
+                        <button id="loadBtn" class="secondary-btn">
+                            <i class="fa fa-file"></i> 加载文件
+                        </button>
+                        <button id="testLoopback" class="secondary-btn">
+                            <i class="fa fa-refresh"></i> 测试回环
+                        </button>
+                        <button id="testNewlineBtn" class="secondary-btn">
+                            <i class="fa fa-terminal"></i> 测试换行符
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 发送设置（右侧，固定宽度） -->
+            <div class="card settings-card">
+                <div class="panel-header">
+                    <i class="fa fa-cog"></i>
+                    <div class="panel-title">发送设置</div>
+                </div>
+                <div class="control-panel">
+                    <div class="settings-group vertical-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hexSend"> 十六进制发送
+                        </label>
+                        <div class="newline-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="appendNewline" checked> 自动添加换行
+                            </label>
+                            <select id="newlineType">
+                                <option value="\n"selected>LF (\n)</option>
+                                <option value="\r">CR (\r)</option>
+                                <option value="\r\n" >CR+LF (\r\n)</option>
+                            </select>
+                        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="repeatSend"> 定时发送
+                            <input type="checkbox" id="isclear">自动清除发送缓存
+                        </label>
+                        <input type="number" id="repeatInterval" class="repeat-interval" placeholder="间隔(ms)" value="1000" disabled="true">
+                        
+                        <div class="preset-group">
+                            <label>预设指令:</label>
+                            <select id="presetCommands">
+                                <!-- <option value="">-- 选择预设指令 --</option> -->
+                                <option value="AT" selected>AT</option>
+                                <option value="AT+GMR">AT+GMR (查询版本)</option>
+                                <option value="AT+RST">AT+RST (重启)</option>
+                                <option value="AT+CWLAP">AT+CWLAP (扫描WiFi)</option>
+                                <option value="custom">自定义AT指令...</option>
+                            </select>
+                            <button id="sendPresetBtn" class="secondary-btn" style="margin-top: 8px;">
+                                <i class="fa fa-paper-plane"></i> 发送预设
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 调试信息 -->
+        <div class="card">
+            <div class="panel-header">
+                <i class="fa fa-bug"></i>
+                <div class="panel-title">调试信息</div>
+            </div>
+            <div class="control-panel">
+                <textarea id="debugLog" readonly></textarea>
+                <div class="button-group">
+                    <button id="clearDebugBtn" class="secondary-btn">
+                        <i class="fa fa-trash"></i> 清空调试信息
+                    </button>
+                    <button id="exportDebugBtn" class="secondary-btn">
+                        <i class="fa fa-download"></i> 导出调试日志
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <script  type="module" src="js/Value.js"></script> -->
+    <!-- <script  type="module" src="js/DOM.js"></script> -->
+    <!-- <script  type="module" src="js/Serial.js"></script> -->
+    <!-- <script type="module" src="js/debuglog.js"></script> -->
+    <script  type="module" src="js/App.js"></script>
+    <!-- <script src="app.js"></script> -->
+   
+</body>
+</html>
+    
