@@ -1,0 +1,30 @@
+9-29
+完成了初步的html&&css
+实现了串口的连接断开
+9-30
+实现了数据的接收和发送
+10-1
+优化了按键以及复选框的功能代码
+实现了其他功能代码
+10-2
+:优化了接收保存的编码避免乱码
+添加了授权设备自动连接
+10-3
+添加了调试的开闭
+添加了连接配置更改自动重连
+优化了AT指令的列表
+优化检测自动连接
+
+// 假设页面中有一个id为"cppCodeContent"的textarea元素
+var cppEditor = CodeMirror.fromTextArea(document.getElementById("cppCodeContent"), {
+    lineNumbers: true,          // 显示行号
+    indentUnit: 4,              // 缩进单位为4个空格
+    styleActiveLine: true,      // 当前行背景高亮
+    matchBrackets: true,        // 括号匹配高亮
+    autoCloseBrackets: true,    // 自动补全括号
+    mode: "text/x-c++src",      // C/C++模式（支持C和C++语法）
+    theme: "idea",              // 使用idea主题
+    lineWrapping: false,        // 不自动换行（代码编辑器通常不自动换行）
+    smartIndent: true,          // 智能缩进（根据语法自动调整缩进）
+    tabSize: 4                  // Tab键对应4个空格
+});
