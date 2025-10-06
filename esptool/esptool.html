@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>ESP固件烧录工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="app.css">
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <h1 class="text-xl">
+                    <i class="fa fa-microchip">ESP固件烧录工具</i>
+                </h1>
+            </div>
+            <div class="text-xl subtitle">
+                基于esptool-js构建
+            </div>
+        </div>
+    </header>
+    <main class=" container main-content">
+        <div class="gc">
+            <div class="cp">
+                <div class="p">
+                    <h2 class="pt">设备控制</h2>
+                    <div class="cs">
+                        <h3>设备连接</h3>
+                        <button id="con" class=" btn btn-primar">
+                            <i class="fa fa-connectdevelop">连接ESP设备</i>
+                        </button>
+                    </div>
+                    <div class="sc">
+                        <h3 id="h3">固件连接</h3>
+                        <div class="fd" id="fd">
+                            <input type="file" id="fl" accept=".bin" class="hidden" />
+                            <label for="fl" class="file-upload-label" id="dropZone">
+                                <i class="fa fa-file-code-o"></i>
+                                <p id="fm">拖放 .bin 固件文件或点击选择</p>
+                                <p id="fileName" class="file-name"></p>
+                            </label>
+                        </div>
+                        <div class="flash-addr">
+                            <label for="">烧录地址</label>
+                            <input type="text" id="flash-addr" value="0x0000" pattern="0x[0-9A-Fa-f]{4,8}"
+                                title="请输入有效的十六进制地址，例如：0x0000" />
+                        </div>
+                        <div class="buttons">
+                            <button id="infoBtn" class="btn" disabled>
+                                <i class="fa fa-connectdevelop"></i>
+                                <span>重启</span>
+                            </button>
+                            <button id="eraseBtn" class="btn" disabled>
+                                <i class="fa fa-eraser"></i>
+                                <span>擦除Flash</span>
+                            </button>
+                            <button id="flashBtn" class=" btn" disabled>
+                                <i class=" fa fa-download"></i>
+                                <span>烧录固件</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-p">
+                    <div class="p">
+                        <h2 class="pt">芯片信息</h2>
+                        <div class="info" id="info">
+                            <div class="info-item">
+                                <p class="info-label">芯片型号</p>
+                                <p class="info-value" id="Model">-未连接-</p>
+                            </div>
+                            <div class="info-item">
+                                <p class="info-label">MAC 地址</p>
+                                <p class="info-value" id="MAC">-未连接-</p>
+                            </div>
+                            <div class="info-item">
+                                <p class="info-label">Flash 大小</p>
+                                <p class="info-value" id="FlashSize">-未连接-</p>
+                            </div>
+                            <div class="info-item">
+                                <p class="info-label">芯片 ID</p>
+                                <p class="info-value" id="ChipID">-未连接-</p>
+                            </div>
+                            <div class="info-item">
+                                <p class="info-label">芯片特性</p>
+                                <p class="info-value" id="Features">-未连接-</p>
+                            </div>
+                            <div class="info-item">
+                                <p class="info-label">晶振频率</p>
+                                <p class="info-value" id="Freq">-未连接-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p">
+                        <h2 class="pt">操作日志</h2>
+                        <div class="log" id="log">
+                            <p>等待操作</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="alertDiv" style="display: none; color: red; margin: 10px 0;">
+            <p id="alertmsg"></p>
+        </div>
+    </main>
+    <footer class="footer">
+        <p>esptllo-js工具|仅支持现代浏览器 (Chrome, Edge 等)</p>
+    </footer>
+</body>
+<script src="esptool.js" type="module"></script>
+<script src="newbin.js" type="module"></script>
+
+
+
+
+
+
+</html>
