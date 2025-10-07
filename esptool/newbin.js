@@ -14,12 +14,12 @@ export function mybin() {
 
     const options = [
         {
-            path: 'bin/Ai-Thinker_ESP8266_DOUT_8Mbit_v1.5.4.1-a_20171130.bin',
+            path: './bin/Ai-Thinker_ESP8266_DOUT_8Mbit_v1.5.4.1-a_20171130.bin',
             name: 'Ai-Thinker ESP8266 DOUT 8Mbit v1.5.4.1-a',
             address: '0x00000'
         },
         {
-            path: 'bin/Ai-Thinker_ESP8266_DOUT_32Mbit_v1.5.4.1-a_20171130.bin',
+            path: './bin/Ai-Thinker_ESP8266_DOUT_32Mbit_v1.5.4.1-a_20171130.bin',
             name: 'Ai-Thinker ESP8266 DOUT 32Mbit v1.5.4.1-a',
             address: '0x00000'
         }
@@ -66,3 +66,4 @@ export function mybin() {
 
 
 mybin();
+
